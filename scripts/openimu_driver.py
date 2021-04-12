@@ -68,15 +68,30 @@ if __name__ == "__main__":
         imu_msg.angular_velocity.y = readback[5] * convert_rads
         imu_msg.angular_velocity.z = readback[6] * convert_rads
         imu_msg.angular_velocity_covariance[0] = -1
+
+        yaw = readback[9] * convert_rads
+        pitch = readback[8] * convert_rads
+        roll = readback[7] * convert_rads
+        cy = math.cos(yaw * 0.5)
+        sy = math.sin(yaw * 0.5)
+        cp = math.cos(pitch * 0.5)
+        sp = math.sin(pitch * 0.5)
+        cr = math.cos(roll * 0.5)
+        sr = math.sin(roll * 0.5)
+
+        imu_msg.orientation.w = cr * cp * cy + sr * sp * sy
+        imu_msg.orientation.x = sr * cp * cy - cr * sp * sy
+        imu_msg.orientation.y = cr * sp * cy + sr * cp * sy
+        imu_msg.orientation.z = cr * cp * sy - sr * sp * cy
         pub_imu.publish(imu_msg)
 
         # Publish magnetometer data - convert Gauss to Tesla
         mag_msg.header.stamp = imu_msg.header.stamp
         mag_msg.header.frame_id = frame_id
         mag_msg.header.seq = seq
-        mag_msg.magnetic_field.x = readback[7] * convert_tesla
-        mag_msg.magnetic_field.y = readback[8] * convert_tesla
-        mag_msg.magnetic_field.z = readback[9] * convert_tesla
+        mag_msg.magnetic_field.x = roll # readback[7] # * convert_tesla
+        mag_msg.magnetic_field.y = pitch # readback[8] # * convert_tesla
+        mag_msg.magnetic_field.z = yaw # readback[9] # * convert_tesla
         mag_msg.magnetic_field_covariance = [0,0,0,0,0,0,0,0,0]
         pub_mag.publish(mag_msg)
 

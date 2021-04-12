@@ -52,11 +52,11 @@ class OpenIMU(object):
             yrate = struct.unpack('f', bytes(yrateraw))[0]
             zrateraw = (readback[24:28]) #zrate
             zrate = struct.unpack('f', bytes(zrateraw))[0]
-            xmagraw = (readback[16:20]) #xrate
+            xmagraw = (readback[28:32]) #xrate
             xmag = struct.unpack('f', bytes(xmagraw))[0]
-            ymagraw = (readback[20:24]) #yrate
+            ymagraw = (readback[32:36]) #yrate
             ymag = struct.unpack('f', bytes(ymagraw))[0]
-            zmagraw = (readback[24:28]) #zrate
+            zmagraw = (readback[36:40]) #zrate
             zmag = struct.unpack('f', bytes(zmagraw))[0]
             imudata =[time_ms, xaccel, yaccel, zaccel, xrate, yrate, zrate, xmag, ymag, zmag]
         return imudata
