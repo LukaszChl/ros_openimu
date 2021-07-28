@@ -101,7 +101,7 @@ class OpenIMU(object):
             xaccel = struct.unpack('f', bytes(readback[24:28]))[0]
             yaccel = struct.unpack('f', bytes(readback[28:32]))[0]
             zaccel = struct.unpack('f', bytes(readback[32:36]))[0]
-	    xaccel_bias = struct.unpack('f', bytes(readback[36:40]))[0]
+            xaccel_bias = struct.unpack('f', bytes(readback[36:40]))[0]
             yaccel_bias = struct.unpack('f', bytes(readback[40:44]))[0]
             zaccel_bias = struct.unpack('f', bytes(readback[44:48]))[0]
             xrate = struct.unpack('f', bytes(readback[48:52]))[0]

@@ -4,7 +4,8 @@ import rospy
 import sys
 import math
 from time import time
-from sensor_msgs.msg import Imu, MagneticField
+from sensor_msgs.msg import Imu, MagneticField, NavSatFix
+from geometry_msgs.msg import TwistWithCovarianceStamped
 
 try:
     from ros_openimu.src.aceinna.tools import OpenIMU
@@ -39,9 +40,13 @@ if __name__ == "__main__":
 
     pub_imu = rospy.Publisher('imu_acc_ar', Imu, queue_size=1)
     pub_mag = rospy.Publisher('imu_mag', MagneticField, queue_size=1)
+    pub_gnss = rospy.Publisher('gnss', NavSatFix, queue_size=1)
+    pub_gnss_vel = rospy.Publisher('gnss_vel', TwistWithCovarianceStamped, queue_size=1)
 
     imu_msg = Imu()             # IMU data
     mag_msg = MagneticField()   # Magnetometer data
+    gnss_msg = NavSatFix()      # GNSS message
+    gnss_vel_msg = TwistWithCovarianceStamped()      # GNSS velocities
     
     rate = rospy.Rate(200)   # 10Hz
     seq = 0
@@ -60,18 +65,18 @@ if __name__ == "__main__":
         imu_msg.header.frame_id = frame_id
         imu_msg.header.seq = seq
         imu_msg.orientation_covariance[0] = -1
-        imu_msg.linear_acceleration.x = readback[1]
-        imu_msg.linear_acceleration.y = readback[2]
-        imu_msg.linear_acceleration.z = readback[3]
+        imu_msg.linear_acceleration.x = readback[5]
+        imu_msg.linear_acceleration.y = readback[6]
+        imu_msg.linear_acceleration.z = readback[7]
         imu_msg.linear_acceleration_covariance[0] = -1
-        imu_msg.angular_velocity.x = readback[4] * convert_rads
-        imu_msg.angular_velocity.y = readback[5] * convert_rads
-        imu_msg.angular_velocity.z = readback[6] * convert_rads
+        imu_msg.angular_velocity.x = readback[11] * convert_rads
+        imu_msg.angular_velocity.y = readback[12] * convert_rads
+        imu_msg.angular_velocity.z = readback[13] * convert_rads
         imu_msg.angular_velocity_covariance[0] = -1
 
-        yaw = readback[9] * convert_rads
-        pitch = readback[8] * convert_rads
-        roll = readback[7] * convert_rads
+        yaw = readback[4] * convert_rads
+        pitch = readback[3] * convert_rads
+        roll = readback[2] * convert_rads
         cy = math.cos(yaw * 0.5)
         sy = math.sin(yaw * 0.5)
         cp = math.cos(pitch * 0.5)
@@ -89,11 +94,27 @@ if __name__ == "__main__":
         mag_msg.header.stamp = imu_msg.header.stamp
         mag_msg.header.frame_id = frame_id
         mag_msg.header.seq = seq
-        mag_msg.magnetic_field.x = roll # readback[7] # * convert_tesla
-        mag_msg.magnetic_field.y = pitch # readback[8] # * convert_tesla
-        mag_msg.magnetic_field.z = yaw # readback[9] # * convert_tesla
+        mag_msg.magnetic_field.x = readback[20] # * convert_tesla
+        mag_msg.magnetic_field.y = readback[21] # * convert_tesla
+        mag_msg.magnetic_field.z = readback[22] # * convert_tesla
         mag_msg.magnetic_field_covariance = [0,0,0,0,0,0,0,0,0]
         pub_mag.publish(mag_msg)
+
+        gnss_msg.header.stamp = imu_msg.header.stamp
+        gnss_msg.header.frame_id = frame_id
+        gnss_msg.header.seq = seq
+        gnss_msg.latitude = readback[23]
+        gnss_msg.longitude = readback[24]
+        gnss_msg.altitude = readback[25]
+        pub_gnss.publish(gnss_msg)
+
+        gnss_vel_msg.header.stamp = imu_msg.header.stamp
+        gnss_vel_msg.header.frame_id = frame_id
+        gnss_vel_msg.header.seq = seq
+        gnss_vel_msg.twist.twist.linear.x = readback[17] #north
+        gnss_vel_msg.twist.twist.linear.y = readback[18] #east
+        gnss_vel_msg.twist.twist.linear.z = readback[19] #down
+        pub_gnss_vel.publish(gnss_vel_msg)
 
         seq = seq + 1
         rate.sleep()
