@@ -92,6 +92,40 @@ class OpenIMU(object):
             zaccel = struct.unpack('f', bytes(readback[48:52]))[0]
             imudata =[time_ms, time_s, roll, pitch, heading, xrate, yrate, zrate, xaccel, yaccel, zaccel]
 
+        if datatype == ('e2'):
+            time_ms = struct.unpack('I', bytes(readback[0:4]))[0] #unin32
+            time_s = struct.unpack('d', bytes(readback[4:12]))[0]  #double
+            roll = struct.unpack('f', bytes(readback[12:16]))[0]
+            pitch = struct.unpack('f', bytes(readback[16:20]))[0]
+            heading = struct.unpack('f', bytes(readback[20:24]))[0]
+            xaccel = struct.unpack('f', bytes(readback[24:28]))[0]
+            yaccel = struct.unpack('f', bytes(readback[28:32]))[0]
+            zaccel = struct.unpack('f', bytes(readback[32:36]))[0]
+	    xaccel_bias = struct.unpack('f', bytes(readback[36:40]))[0]
+            yaccel_bias = struct.unpack('f', bytes(readback[40:44]))[0]
+            zaccel_bias = struct.unpack('f', bytes(readback[44:48]))[0]
+            xrate = struct.unpack('f', bytes(readback[48:52]))[0]
+            yrate = struct.unpack('f', bytes(readback[52:56]))[0]
+            zrate = struct.unpack('f', bytes(readback[56:60]))[0]
+            xrate_bias = struct.unpack('f', bytes(readback[60:64]))[0]
+            yrate_bias = struct.unpack('f', bytes(readback[64:68]))[0]
+            zrate_bias = struct.unpack('f', bytes(readback[68:72]))[0]
+            north_vel = struct.unpack('f', bytes(readback[72:76]))[0]
+            east_vel = struct.unpack('f', bytes(readback[76:80]))[0]
+            down_vel = struct.unpack('f', bytes(readback[80:84]))[0]
+            xmag = struct.unpack('f', bytes(readback[84:88]))[0]
+            ymag = struct.unpack('f', bytes(readback[88:92]))[0]
+            zmag = struct.unpack('f', bytes(readback[92:96]))[0]
+            lat = struct.unpack('d', bytes(readback[96:104]))[0]
+            lon = struct.unpack('d', bytes(readback[104:112]))[0]
+            alt = struct.unpack('d', bytes(readback[112:120]))[0]
+            op_mode = struct.unpack('B', bytes(readback[120:121]))[0]
+            lin_acc_sw = struct.unpack('B', bytes(readback[121:122]))[0]
+            turn_sw = struct.unpack('B', bytes(readback[122:123]))[0]
+            imudata =[time_ms, time_s, roll, pitch, heading, xaccel, yaccel, zaccel, xaccel_bias, yaccel_bias, zaccel_bias,
+                      xrate, yrate, zrate, xrate_bias, yrate_bias, zrate_bias, north_vel, east_vel, down_vel, 
+                      xmag, ymag, zmag, lat, lon, alt, op_mode, lin_acc_sw, turn_sw]
+
         return imudata
 
 # set values in development
