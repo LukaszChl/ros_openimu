@@ -21,7 +21,7 @@ except:  # pylint: disable=bare-except
 def simple_start():
     openimudev = OpenIMU()
     openimudev.startup()
-    readback = openimudev.getdata('z1')
+    readback = openimudev.getdata('e2')
     print(readback)
 
 '''
