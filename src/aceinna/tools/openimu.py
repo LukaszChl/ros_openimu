@@ -123,9 +123,8 @@ class OpenIMU(object):
             lin_acc_sw = struct.unpack('B', bytes(readback[121:122]))[0]
             turn_sw = struct.unpack('B', bytes(readback[122:123]))[0]
             imudata =[time_ms, time_s, roll, pitch, heading, xaccel, yaccel, zaccel, xaccel_bias, yaccel_bias, zaccel_bias,
-                      xrate, yrate, zrate, xrate_bias, yrate_bias, zrate_bias, north_vel, east_vel, down_vel, 
-                      xmag, ymag, zmag, lat, lon, alt, op_mode, lin_acc_sw, turn_sw]
-
+                    xrate, yrate, zrate, xrate_bias, yrate_bias, zrate_bias, north_vel, east_vel, down_vel, 
+                    xmag, ymag, zmag, lat, lon, alt, op_mode, lin_acc_sw, turn_sw]
         return imudata
 
 # set values in development
